@@ -15,5 +15,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PRO
 add_executable(${PROJECT_NAME}_tests
     "${PROJECT_SOURCE_DIR}/tests/main_test.cpp"
     "${PROJECT_SOURCE_DIR}/src/core/IncidentLogger.cpp"
+    "${PROJECT_SOURCE_DIR}/src/core/EarlyWarningSiren.cpp"
+    "${PROJECT_SOURCE_DIR}/src/core/Simulation.cpp"
 )
 set_target_properties(${PROJECT_NAME}_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build")

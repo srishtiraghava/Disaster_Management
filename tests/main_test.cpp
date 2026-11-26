@@ -14,6 +14,7 @@
 #include "../include/core/SensorNode.hpp"
 #include "../include/core/Exceptions.hpp"
 #include "../include/core/IncidentLogger.hpp"
+#include "../include/core/Simulation.hpp"
 #include <memory>
 #include <type_traits>
 #include <filesystem>
@@ -37,6 +38,135 @@ int main() {
 
     const auto incidentFile = std::filesystem::temp_directory_path() / "alf_ewg_unit4_test.bin";
     std::filesystem::remove(incidentFile);
+
+    const auto simulationFile = std::filesystem::temp_directory_path() / "alf_ewg_simulation_test.bin";
+    std::filesystem::remove(simulationFile);
+    {
+        IncidentLogger simulationLogger(simulationFile);
+        SimulationConfig config;
+        config.randomSeed = 8675309;
+        SimulationEngine simulation(simulationLogger, config);
+        assert(simulation.stations().size() == 5);
+        assert(simulation.stations()[0].region == "Uttarkashi");
+        assert(simulation.stations()[1].region == "Chamoli");
+        assert(simulation.stations()[2].region == "Rudraprayag");
+        assert(simulation.stations()[3].region == "Joshimath");
+        assert(simulation.stations()[4].region == "Pithoragarh");
+
+        const auto firstRun = simulation.runScenario(SimulationScenario::CombinedThreat);
+        assert(firstRun.size() == 5);
+        assert(firstRun[0].overallRisk >= 75.0);
+        assert(firstRun[0].classification == RiskClass::Critical);
+        assert(firstRun[0].sirenActive && !firstRun[0].incidentId.empty());
+        assert(!firstRun[0].recommendedRoutes.empty());
+        assert(firstRun[0].recommendedRoutes[0].available);
+        assert(firstRun[0].recommendedRoutes[0].startingRegion == "Uttarkashi");
+        assert(firstRun[0].recommendedRoutes[0].roadCondition != RoadCondition::Blocked);
+
+        const auto alertCount = simulation.alertHistory().size();
+        assert(alertCount == 5);
+        simulation.runScenario(SimulationScenario::CombinedThreat);
+        assert(simulation.alertHistory().size() == alertCount); // no duplicate activation events
+        assert(simulationLogger.listHistory().size() == 10);
+
+        StationTelemetry manual = simulation.stations().front();
+        manual.soilSaturation = 0.2;
+        manual.rainfallRate = 0.0;
+        manual.vibrationFrequency = 1.0;
+        manual.tiltAngle = 0.0;
+        manual.riverLevel = 0.1;
+        manual.batteryLevel = 10.0;
+        const auto manualResult = simulation.runManual(manual);
+        assert(manualResult.overallRisk < 25.0);
+        assert(!manualResult.sirenActive);
+        assert(simulation.alertHistory().size() == alertCount + 1); // siren deactivation was recorded
+        assert(simulationLogger.listHistory().size() == 11); // low battery is also logged
+        bool invalidManualRejected = false;
+        manual.rainfallRate = 301.0;
+        try { simulation.runManual(manual); }
+        catch (const std::invalid_argument&) { invalidManualRejected = true; }
+        assert(invalidManualRejected);
+    }
+    {
+        // A new process/session with the same seed must avoid overwriting old incident IDs.
+        IncidentLogger persistedLogger(simulationFile);
+        SimulationConfig restartedConfig;
+        restartedConfig.randomSeed = 8675309;
+        SimulationEngine restarted(persistedLogger, restartedConfig);
+        const auto restartedRun = restarted.runScenario(SimulationScenario::CombinedThreat);
+        assert(restartedRun.front().incidentId == "SIM-000001-UK-UTT-01-1");
+    }
+    std::filesystem::remove(simulationFile);
+
+    assert(SimulationEngine::classifyRisk(24.99) == RiskClass::Low);
+    assert(SimulationEngine::classifyRisk(25.0) == RiskClass::Moderate);
+    assert(SimulationEngine::classifyRisk(50.0) == RiskClass::High);
+    assert(SimulationEngine::classifyRisk(75.0) == RiskClass::Critical);
+    assert(SimulationEngine::calculateOverallRisk(90.0, 10.0) == 90.0);
+
+    const auto scenarioFile = std::filesystem::temp_directory_path() / "alf_ewg_scenario_test.bin";
+    std::filesystem::remove(scenarioFile);
+    {
+        IncidentLogger scenarioLogger(scenarioFile);
+        SimulationConfig scenarioConfig;
+        scenarioConfig.randomSeed = 12345;
+        scenarioConfig.sensorNoiseFraction = 0.0;
+        SimulationEngine scenarios(scenarioLogger, scenarioConfig);
+        const double normalRain = scenarios.runScenario(SimulationScenario::Normal)[0].telemetry.rainfallRate;
+        const auto heavy = scenarios.runScenario(SimulationScenario::HeavyRainfall);
+        assert(heavy[0].telemetry.rainfallRate >= scenarioConfig.heavyRainfallMinMmPerHour);
+        const auto wet = scenarios.runScenario(SimulationScenario::IncreasingSoilSaturation);
+        assert(wet[0].telemetry.soilSaturation > 0.35);
+        const auto seismic = scenarios.runScenario(SimulationScenario::AbnormalSeismicVibrations);
+        assert(seismic[0].telemetry.vibrationFrequency >= scenarioConfig.abnormalVibrationMinHz);
+        const auto river = scenarios.runScenario(SimulationScenario::RapidRiverRise);
+        assert(river[0].telemetry.riverLevel > 1.1);
+        const auto resetNormal = scenarios.runScenario(SimulationScenario::Normal);
+        assert(resetNormal[0].telemetry.rainfallRate == normalRain);
+    }
+    std::filesystem::remove(scenarioFile);
+
+    const auto reproducibilityFile1 = std::filesystem::temp_directory_path() / "alf_ewg_seed_a.bin";
+    const auto reproducibilityFile2 = std::filesystem::temp_directory_path() / "alf_ewg_seed_b.bin";
+    std::filesystem::remove(reproducibilityFile1);
+    std::filesystem::remove(reproducibilityFile2);
+
+    const auto alertLevelFile = std::filesystem::temp_directory_path() / "alf_ewg_alert_level_test.bin";
+    std::filesystem::remove(alertLevelFile);
+    {
+        IncidentLogger alertLogger(alertLevelFile);
+        SimulationEngine alertSimulation(alertLogger);
+        StationTelemetry reading = alertSimulation.stations().front();
+        reading.soilSaturation = 0.4;
+        reading.rainfallRate = 40.0;
+        reading.vibrationFrequency = 10.0;
+        reading.tiltAngle = 10.0;
+        reading.riverLevel = 4.0;
+        const auto high = alertSimulation.runManual(reading);
+        assert(high.classification == RiskClass::High && high.sirenActive);
+        reading.riverLevel = 6.0;
+        const auto critical = alertSimulation.runManual(reading);
+        assert(critical.classification == RiskClass::Critical);
+        assert(alertSimulation.alertHistory().size() == 2); // activation, then a level change
+        alertSimulation.runManual(reading);
+        assert(alertSimulation.alertHistory().size() == 2); // unchanged critical state is deduplicated
+    }
+    std::filesystem::remove(alertLevelFile);
+    {
+        IncidentLogger loggerA(reproducibilityFile1), loggerB(reproducibilityFile2);
+        SimulationConfig reproducibleConfig;
+        reproducibleConfig.randomSeed = 314159;
+        SimulationEngine engineA(loggerA, reproducibleConfig), engineB(loggerB, reproducibleConfig);
+        const auto runA = engineA.runScenario(SimulationScenario::HeavyRainfall);
+        const auto runB = engineB.runScenario(SimulationScenario::HeavyRainfall);
+        assert(runA.size() == runB.size());
+        for (std::size_t i = 0; i < runA.size(); ++i) {
+            assert(runA[i].telemetry.rainfallRate == runB[i].telemetry.rainfallRate);
+            assert(runA[i].telemetry.soilSaturation == runB[i].telemetry.soilSaturation);
+        }
+    }
+    std::filesystem::remove(reproducibilityFile1);
+    std::filesystem::remove(reproducibilityFile2);
     IncidentLogger logger(incidentFile);
     IncidentRecord incident{"INC-1", "2026-11-26T12:00:00Z", "ST-4", "North Ridge",
                             "landslide", 0.7, 0.2, 0.6, true, "Route A"};
