@@ -1,0 +1,35 @@
+HazardCalculations 0 0
+RiskClassifications 0 0
+FunctionOverloading 0 0
+DeepCopying 0 0
+OperatorOverloading 0 0
+StaticMembers 0 0
+VirtualInheritance 0 0
+RuntimePolymorphism 0 0
+Containership 0 0
+ExceptionHandling 0 0
+BinarySerialization 0 0
+SeekpSeekg 0 0
+Rollback 0 0
+EvacuationPrioritization 0 0
+SirenActivation 0 0
+InvalidTelemetryRejection 0 0
+DashboardIntegration 0 0
+---
+HazardCalculations
+RiskClassifications
+FunctionOverloading
+DeepCopying
+OperatorOverloading
+StaticMembers
+VirtualInheritance
+RuntimePolymorphism
+Containership
+ExceptionHandling
+BinarySerialization
+SeekpSeekg
+Rollback
+EvacuationPrioritization
+SirenActivation
+InvalidTelemetryRejection
+DashboardIntegration

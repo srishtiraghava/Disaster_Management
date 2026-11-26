@@ -1,0 +1,258 @@
+Start testing: Nov 26 23:37 India Standard Time
+----------------------------------------------------------
+1/17 Testing: HazardCalculations
+1/17 Test: HazardCalculations
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "HazardCalculations"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"HazardCalculations" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"HazardCalculations" end time: Nov 26 23:37 India Standard Time
+"HazardCalculations" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/17 Testing: RiskClassifications
+2/17 Test: RiskClassifications
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "RiskClassifications"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"RiskClassifications" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"RiskClassifications" end time: Nov 26 23:37 India Standard Time
+"RiskClassifications" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/17 Testing: FunctionOverloading
+3/17 Test: FunctionOverloading
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "FunctionOverloading"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"FunctionOverloading" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"FunctionOverloading" end time: Nov 26 23:37 India Standard Time
+"FunctionOverloading" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/17 Testing: DeepCopying
+4/17 Test: DeepCopying
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "DeepCopying"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"DeepCopying" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"DeepCopying" end time: Nov 26 23:37 India Standard Time
+"DeepCopying" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/17 Testing: OperatorOverloading
+5/17 Test: OperatorOverloading
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "OperatorOverloading"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"OperatorOverloading" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"OperatorOverloading" end time: Nov 26 23:37 India Standard Time
+"OperatorOverloading" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/17 Testing: StaticMembers
+6/17 Test: StaticMembers
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "StaticMembers"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"StaticMembers" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"StaticMembers" end time: Nov 26 23:37 India Standard Time
+"StaticMembers" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/17 Testing: VirtualInheritance
+7/17 Test: VirtualInheritance
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "VirtualInheritance"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"VirtualInheritance" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"VirtualInheritance" end time: Nov 26 23:37 India Standard Time
+"VirtualInheritance" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/17 Testing: RuntimePolymorphism
+8/17 Test: RuntimePolymorphism
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "RuntimePolymorphism"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"RuntimePolymorphism" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"RuntimePolymorphism" end time: Nov 26 23:37 India Standard Time
+"RuntimePolymorphism" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/17 Testing: Containership
+9/17 Test: Containership
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "Containership"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"Containership" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"Containership" end time: Nov 26 23:37 India Standard Time
+"Containership" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/17 Testing: ExceptionHandling
+10/17 Test: ExceptionHandling
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "ExceptionHandling"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"ExceptionHandling" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"ExceptionHandling" end time: Nov 26 23:37 India Standard Time
+"ExceptionHandling" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/17 Testing: BinarySerialization
+11/17 Test: BinarySerialization
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "BinarySerialization"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"BinarySerialization" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"BinarySerialization" end time: Nov 26 23:37 India Standard Time
+"BinarySerialization" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/17 Testing: SeekpSeekg
+12/17 Test: SeekpSeekg
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "SeekpSeekg"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"SeekpSeekg" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"SeekpSeekg" end time: Nov 26 23:37 India Standard Time
+"SeekpSeekg" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/17 Testing: Rollback
+13/17 Test: Rollback
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "Rollback"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"Rollback" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"Rollback" end time: Nov 26 23:37 India Standard Time
+"Rollback" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/17 Testing: EvacuationPrioritization
+14/17 Test: EvacuationPrioritization
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "EvacuationPrioritization"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"EvacuationPrioritization" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"EvacuationPrioritization" end time: Nov 26 23:37 India Standard Time
+"EvacuationPrioritization" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/17 Testing: SirenActivation
+15/17 Test: SirenActivation
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "SirenActivation"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"SirenActivation" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"SirenActivation" end time: Nov 26 23:37 India Standard Time
+"SirenActivation" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/17 Testing: InvalidTelemetryRejection
+16/17 Test: InvalidTelemetryRejection
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "InvalidTelemetryRejection"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"InvalidTelemetryRejection" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"InvalidTelemetryRejection" end time: Nov 26 23:37 India Standard Time
+"InvalidTelemetryRejection" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/17 Testing: DashboardIntegration
+17/17 Test: DashboardIntegration
+Command: "C:/DisManage/Disaster_Management/build/ALF_EWG_tests.exe" "DashboardIntegration"
+Directory: C:/DisManage/Disaster_Management/build-mingw
+"DashboardIntegration" start time: Nov 26 23:37 India Standard Time
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"DashboardIntegration" end time: Nov 26 23:37 India Standard Time
+"DashboardIntegration" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 26 23:37 India Standard Time

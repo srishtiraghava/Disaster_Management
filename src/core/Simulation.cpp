@@ -61,7 +61,11 @@ SimulationEngine::SimulationEngine(IncidentLogger& logger, SimulationConfig conf
         const std::string sirenId = "SIREN-" + station.region;
         regionalSirens_.emplace(station.region,
             EarlyWarningSiren(sirenId, station.latitude, station.longitude));
+        telemetryAudits_.emplace(station.stationId, Telemetry{});
     }
+    lastResults_ = snapshotCurrentState();
+    appendEvent("System initialized with " + std::to_string(stations_.size()) +
+                " monitoring stations (seed=" + std::to_string(config_.randomSeed) + ")");
 }
 
 SimulationEngine::~SimulationEngine() {
@@ -207,6 +211,9 @@ std::vector<SimulationResult> SimulationEngine::runScenario(SimulationScenario s
         station = reading;
         results.push_back(evaluate(reading, scenarioName(scenario)));
     }
+    lastResults_ = results;
+    appendEvent("Cycle " + std::to_string(cycle_) + ": Scenario '" +
+                std::string(scenarioName(scenario)) + "' completed");
     return results;
 }
 
@@ -232,7 +239,19 @@ SimulationResult SimulationEngine::runManual(const StationTelemetry& telemetry) 
         return station.stationId == telemetry.stationId;
     });
     *found = telemetry;
-    return evaluate(telemetry, "Manual telemetry");
+    SimulationResult result = evaluate(telemetry, "Manual telemetry");
+    bool updatedLast = false;
+    for (auto& existing : lastResults_) {
+        if (existing.telemetry.stationId == telemetry.stationId) {
+            existing = result;
+            updatedLast = true;
+            break;
+        }
+    }
+    if (!updatedLast) lastResults_.push_back(result);
+    appendEvent("Cycle " + std::to_string(cycle_) + ": Manual telemetry processed for " +
+                telemetry.stationId + " (" + telemetry.region + ")");
+    return result;
 }
 
 std::vector<EvacuationRouteRecord> SimulationEngine::recommendRoutes(
@@ -283,11 +302,15 @@ void SimulationEngine::updateSiren(const SimulationResult& result) {
             (shouldBeActive ? "regional warning activated" : "regional warning cleared")});
         if (shouldBeActive) activeAlertLevels_[result.telemetry.region] = result.classification;
         else activeAlertLevels_.erase(result.telemetry.region);
+        appendEvent("Siren " + siren.id() + " " + (shouldBeActive ? "ACTIVATED" : "CLEARED") +
+                    " [" + riskClassName(result.classification) + "]");
     } else if (shouldBeActive && previousLevel != activeAlertLevels_.end() &&
                previousLevel->second != result.classification) {
         alertHistory_.push_back({result.telemetry.region, siren.id(), cycle_, true,
             result.classification, "SIMULATED: regional alert level changed"});
         previousLevel->second = result.classification;
+        appendEvent("Siren " + siren.id() + " level escalated/changed to " +
+                    riskClassName(result.classification));
     }
 }
 
@@ -318,6 +341,43 @@ void SimulationEngine::saveImportantIncident(SimulationResult& result, const std
     incident.evacuationRoute = result.recommendedRoutes.empty()
         ? "No safe route available" : result.recommendedRoutes.front().routeId;
     incidentLogger_.save(incident);
+    appendEvent("Incident persisted: " + result.incidentId + " (" + incident.region + ")");
+}
+
+void SimulationEngine::appendEvent(const std::string& event) {
+    if (systemEvents_.size() >= 200) {
+        systemEvents_.erase(systemEvents_.begin());
+    }
+    systemEvents_.push_back(event);
+}
+
+std::vector<SimulationResult> SimulationEngine::snapshotCurrentState() const {
+    std::vector<SimulationResult> snapshot;
+    snapshot.reserve(stations_.size());
+    for (const auto& station : stations_) {
+        SimulationResult item;
+        item.telemetry = station;
+        item.landslideRisk = calculateLandslideRisk(station);
+        item.floodRisk = calculateFloodRisk(station);
+        item.overallRisk = calculateOverallRisk(item.landslideRisk, item.floodRisk);
+        item.classification = classifyRisk(item.overallRisk);
+        item.recommendedRoutes = recommendRoutes(station, item.landslideRisk, item.floodRisk);
+        const auto sirenIt = regionalSirens_.find(station.region);
+        item.sirenActive = (sirenIt != regionalSirens_.end()) && sirenIt->second.isActive();
+        snapshot.push_back(std::move(item));
+    }
+    return snapshot;
+}
+
+std::vector<EvacuationRouteRecord> SimulationEngine::evaluateRoutesForRegion(const std::string& region) const {
+    for (const auto& station : stations_) {
+        if (station.region == region) {
+            const double landslide = calculateLandslideRisk(station);
+            const double flood = calculateFloodRisk(station);
+            return recommendRoutes(station, landslide, flood);
+        }
+    }
+    return {};
 }
 
 SimulationResult SimulationEngine::evaluate(const StationTelemetry& telemetry, const std::string& incidentType) {
@@ -331,6 +391,9 @@ SimulationResult SimulationEngine::evaluate(const StationTelemetry& telemetry, c
     result.floodRisk = floodProbe.measurement();
     result.overallRisk = calculateOverallRisk(result.landslideRisk, result.floodRisk);
     result.classification = classifyRisk(result.overallRisk);
+    double recordedRisk = 0.0;
+    telemetryAudits_[telemetry.stationId].updateMeasurement(recordedRisk, result.overallRisk);
+    auditBuffer_.push_back(recordedRisk);
     result.recommendedRoutes = recommendRoutes(telemetry, result.landslideRisk, result.floodRisk);
     updateSiren(result);
     result.sirenActive = regionalSirens_.at(telemetry.region).isActive();

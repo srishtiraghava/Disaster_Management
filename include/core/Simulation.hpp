@@ -2,6 +2,8 @@
 
 #include "EarlyWarningSiren.hpp"
 #include "IncidentLogger.hpp"
+#include "Telemetry.hpp"
+#include "TelemetryBuffer.hpp"
 #include <cstdint>
 #include <map>
 #include <random>
@@ -85,6 +87,19 @@ public:
     const std::vector<StationTelemetry>& stations() const noexcept { return stations_; }
     const std::vector<EvacuationRouteRecord>& routes() const noexcept { return routes_; }
     const std::vector<AlertEvent>& alertHistory() const noexcept { return alertHistory_; }
+    const std::map<std::string, EarlyWarningSiren>& sirens() const noexcept { return regionalSirens_; }
+    const std::vector<SimulationResult>& lastResults() const noexcept { return lastResults_; }
+    const std::vector<std::string>& systemEvents() const noexcept { return systemEvents_; }
+    const std::map<std::string, Telemetry>& telemetryAudits() const noexcept { return telemetryAudits_; }
+    const TelemetryBuffer& auditBuffer() const noexcept { return auditBuffer_; }
+    IncidentLogger& incidentLogger() noexcept { return incidentLogger_; }
+    const IncidentLogger& incidentLogger() const noexcept { return incidentLogger_; }
+    std::uint64_t cycle() const noexcept { return cycle_; }
+    const SimulationConfig& config() const noexcept { return config_; }
+
+    std::vector<SimulationResult> snapshotCurrentState() const;
+    std::vector<EvacuationRouteRecord> evaluateRoutesForRegion(const std::string& region) const;
+
     std::vector<SimulationResult> runScenario(SimulationScenario scenario);
     SimulationResult runManual(const StationTelemetry& telemetry);
 
@@ -105,6 +120,7 @@ private:
     SimulationResult evaluate(const StationTelemetry& telemetry, const std::string& incidentType);
     void updateSiren(const SimulationResult& result);
     void saveImportantIncident(SimulationResult& result, const std::string& incidentType);
+    void appendEvent(const std::string& event);
 
     IncidentLogger& incidentLogger_;
     SimulationConfig config_;
@@ -115,6 +131,10 @@ private:
     std::map<std::string, EarlyWarningSiren> regionalSirens_;
     std::map<std::string, RiskClass> activeAlertLevels_;
     std::vector<AlertEvent> alertHistory_;
+    std::vector<SimulationResult> lastResults_;
+    std::vector<std::string> systemEvents_;
+    std::map<std::string, Telemetry> telemetryAudits_;
+    TelemetryBuffer auditBuffer_;
     std::uint64_t cycle_ = 0;
     double risingSoil_ = 0.35;
     double risingRiver_ = 1.1;

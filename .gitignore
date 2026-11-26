@@ -4,12 +4,15 @@
 # Compiled objects
 *.o
 *.obj
+*.a
 *.exe
 *.dll
 *.so
 # CMake caches
 CMakeCache.txt
 CMakeFiles/
+# Runtime incident logs
+*.bin
 # IDE files
 *.vcxproj*
 *.sln
