@@ -3,9 +3,12 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
+#include "Hazard.hpp"
 
 namespace DisasterCore {
 namespace Sensors {
+
+constexpr double kPi = 3.14159265358979323846;
 
 // Existing functions (soilSaturation, rainfallSeverity, etc.) are defined in Hazard.hpp
 // Here we provide overloads for hazard index computation.
@@ -22,8 +25,8 @@ inline double computeHazardIndex(double rainfallRate, double slopeAngle) {
         throw std::invalid_argument("slopeAngle must be in [0,90]");
     }
     // Use rainfallSeverity from Hazard.hpp
-    double rainSev = Hazard::rainfallSeverity(rainfallRate);
-    double slopeFactor = std::sin(slopeAngle * M_PI / 180.0);
+    double rainSev = rainfallSeverity(rainfallRate);
+    double slopeFactor = std::sin(slopeAngle * kPi / 180.0);
     return std::clamp(rainSev * slopeFactor, 0.0, 1.0);
 }
 
@@ -41,8 +44,8 @@ inline double computeHazardIndex(double soilSat, double vibrationFreq, double ti
     if (tiltAngle < 0.0 || tiltAngle > 90.0) {
         throw std::invalid_argument("tiltAngle must be in [0,90]");
     }
-    double vibSev = Hazard::vibrationSeverity(vibrationFreq);
-    double tiltFactor = std::cos(tiltAngle * M_PI / 180.0);
+    double vibSev = vibrationSeverity(vibrationFreq);
+    double tiltFactor = std::cos(tiltAngle * kPi / 180.0);
     double raw = soilSat * vibSev * tiltFactor;
     return std::clamp(raw, 0.0, 1.0);
 }

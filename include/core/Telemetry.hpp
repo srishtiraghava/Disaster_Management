@@ -2,9 +2,13 @@
 
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
+#include <cmath>
 
 namespace DisasterCore {
 namespace Core {
+
+constexpr double kPi = 3.14159265358979323846;
 
 // Simple telemetry holder for sensor raw values.
 class Telemetry {
@@ -52,8 +56,8 @@ inline void transformCoordinates(double latitudeDeg, double longitudeDeg, double
     }
     // Earth radius in km (approx).
     constexpr double R = 6371.0;
-    double latRad = latitudeDeg * M_PI / 180.0;
-    double lonRad = longitudeDeg * M_PI / 180.0;
+    double latRad = latitudeDeg * kPi / 180.0;
+    double lonRad = longitudeDeg * kPi / 180.0;
     xOut = R * lonRad * std::cos(latRad);
     yOut = R * latRad;
 }
