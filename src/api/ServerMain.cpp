@@ -39,7 +39,7 @@ struct ServerConfig {
     int port = 8080;
     std::uint32_t seed = 211;
     std::string logFilePath = "alf_ewg_incidents.bin";
-    std::string corsOrigin = "*";
+    std::string corsOrigin = "http://localhost:5173";
 };
 
 std::uint32_t computeTelemetryChecksum(const StationTelemetry& t) {

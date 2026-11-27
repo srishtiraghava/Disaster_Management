@@ -1,0 +1,38 @@
+{
+  "name": "SENTRA — Disaster Intelligence Platform",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+  "forwardPorts": [5173, 8080, 7681],
+  "portsAttributes": {
+    "5173": {
+      "label": "SENTRA Web Command Center",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    },
+    "8080": {
+      "label": "SENTRA C++ REST API (Private)",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    },
+    "7681": {
+      "label": "ALF-EWG Terminal Control Room",
+      "onAutoForward": "silent",
+      "visibility": "private"
+    }
+  },
+  "postCreateCommand": "cmake -S . -B build && cmake --build build && cd frontend && npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
+}
