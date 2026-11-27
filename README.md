@@ -1,5 +1,5 @@
 # ALF-EWG — Autonomous Landslide & Flash-Flood Early Warning Grid
-
+live:https://expert-journey-jjwrpxvgr7rv35g6x-7681.app.github.dev/
 A modular **C++17** disaster-monitoring control-room simulator and object-oriented programming (CIC-211) reference project. ALF-EWG models regional telemetry stations across five Himalayan districts (Uttarkashi, Chamoli, Rudraprayag, Joshimath, and Pithoragarh), computes independent landslide and flash-flood hazard indices, manages regional warning sirens, prioritizes evacuation routes, persists critical incidents to a random-access binary store with rollback protection, and exposes a 13-option interactive terminal control room.
 
 > **Simulation Disclaimer:** All telemetry readings, risk scores, siren states, evacuation route recommendations, and incident logs produced by ALF-EWG are simulated for educational and demonstration purposes and are not connected to field sensors or emergency services.
