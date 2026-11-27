@@ -36,6 +36,7 @@ using namespace DisasterCore::Alerts;
 
 struct ServerConfig {
     std::string host = "127.0.0.1";
+    std::string demoPassword;
     int port = 8080;
     std::uint32_t seed = 211;
     std::string logFilePath = "alf_ewg_incidents.bin";
@@ -181,7 +182,7 @@ void printUsage(const char* programName) {
               << "  --port <port>         Listen port (default: 8080)\n"
               << "  --seed <number>       Deterministic simulation seed (default: 211)\n"
               << "  --log-file <path>     Binary incident log file (default: alf_ewg_incidents.bin)\n"
-              << "  --cors-origin <orig>  Access-Control-Allow-Origin value (default: *)\n"
+              << "  --cors-origin <orig>  Access-Control-Allow-Origin value (default: http://localhost:5173)\n"
               << "  -h, --help            Show this help message and exit\n";
 }
 
@@ -199,6 +200,10 @@ bool parseArgs(int argc, char* argv[], ServerConfig& cfg, int& exitCode) {
     }
     if (const char* envCors = std::getenv("SENTRA_CORS_ORIGIN")) {
         if (envCors[0] != '\0') cfg.corsOrigin = envCors;
+    }
+
+    if (const char* envPassword = std::getenv("SENTRA_DEMO_PASSWORD")) {
+        if (envPassword[0] != '\0') cfg.demoPassword = envPassword;
     }
 
     for (int i = 1; i < argc; ++i) {
@@ -271,10 +276,28 @@ int main(int argc, char* argv[]) {
 
         server.set_pre_routing_handler([&](const httplib::Request& req, httplib::Response& res) {
             applyCorsHeaders(res, serverCfg.corsOrigin);
+
+            // CORS preflight requests must be handled before authentication.
             if (req.method == "OPTIONS") {
                 res.status = 204;
                 return httplib::Server::HandlerResponse::Handled;
             }
+
+            // When a demo password is configured, require it for every API route.
+            // Keep local development unchanged when SENTRA_DEMO_PASSWORD is unset.
+            if (!serverCfg.demoPassword.empty() && req.path.rfind("/api/", 0) == 0) {
+                const std::string expectedAuthorization = "Bearer " + serverCfg.demoPassword;
+                const bool authorized =
+                    req.has_header("Authorization") &&
+                    req.get_header_value("Authorization") == expectedAuthorization;
+
+                if (!authorized) {
+                    sendError(res, 401, "UNAUTHORIZED",
+                              "A valid SENTRA demo password is required.");
+                    return httplib::Server::HandlerResponse::Handled;
+                }
+            }
+
             return httplib::Server::HandlerResponse::Unhandled;
         });
 
