@@ -2,7 +2,11 @@
 
 **Anticipate. Alert. Protect.**
 
-> **Live Deployment:** _Pending independent deployment — placeholder for future SENTRA production URL._
+> **Live Demo:** [Open SENTRA Command Center](https://super-duper-succotash-q7grpxwxj67rh4j9-5173.app.github.dev/)
+
+> **Demo Access:** The shared demo password is displayed directly on the login screen. Use the **Copy** button there to access the interactive demo.
+
+> **Availability:** This demo is hosted through GitHub Codespaces. The link is available while the Codespace and its frontend/backend processes are running; it may return an unavailable/502 page after the Codespace is stopped or suspended. 
 
 SENTRA is a full-stack disaster intelligence and early warning platform built around the **C++17 ALF-EWG** (*Autonomous Landslide & Flash-Flood Early Warning Grid*) simulation and monitoring engine. It pairs deterministic C++17 geotechnical and hydrological hazard modeling, automatic regional sirens, evacuation route prioritization, and binary incident persistence with a modern **React + TypeScript + Tailwind CSS** emergency operations command center.
 
@@ -36,7 +40,7 @@ Mountainous Himalayan districts face compounding hazards where intense rainfall,
 
 ## Screenshots
 
-> _Screenshots will be added after final visual verification and independent deployment._
+> The live deployment link above opens the interactive command center. Screenshots can be added here as the interface evolves.
 
 | Module | Preview |
 |---|---|
@@ -283,17 +287,35 @@ npm run build
 
 ---
 
+## Public Demo Access
+
+1. Open the [SENTRA live demo](https://super-duper-succotash-q7grpxwxj67rh4j9-5173.app.github.dev/).
+2. The shared demo password is displayed on the login screen; use its **Copy** button.
+3. Enter the password to open the command center and explore the interactive modules.
+
+The demo allows visitors to run simulations and use the available interactive workflows. Since the password is intentionally public for this demonstration, this gate is for convenience rather than strong access control. Do not use real personal, sensitive, or operational emergency data.
+
+The Codespaces URL is temporary infrastructure, not an uptime guarantee. The Codespace must remain running with both services active for the link to work.
+
+---
+
 ## Deployment Preparation
 
 ### GitHub Codespaces (Manual Deployment)
 
-A preconfigured devcontainer is provided in [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) with C++17 (`g++`, `cmake`), Node.js 20, and port attributes:
+A preconfigured devcontainer is provided in [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) with C++17 (`g++`, `cmake`), Node.js 20, and port attributes.
+
+**Live demo:** [https://super-duper-succotash-q7grpxwxj67rh4j9-5173.app.github.dev/](https://super-duper-succotash-q7grpxwxj67rh4j9-5173.app.github.dev/)
+
+The live demo uses a shared password displayed on the login screen. This is a lightweight demo gate, not production-grade authentication. Do not enter sensitive or real emergency-response data.
 
 | Port | Service | Visibility | Notes |
 |---|---|---|---|
-| `5173` | React + Vite Web Command Center | **Public** (forward publicly) | Serves the UI and proxies `/api/*` internally to `127.0.0.1:8080` |
-| `8080` | `SENTRA_api` C++ REST API | **Private** (do not expose publicly) | Bound to `127.0.0.1:8080`; accessed via Vite `/api` proxy |
-| `7681` | `ALF_EWG` Terminal Control Room | **Private** (preserved) | Original terminal dashboard port |
+| `5173` | React + Vite Web Command Center | **Public** | Public entry point; Vite proxies `/api/*` internally to `127.0.0.1:8080` |
+| `8080` | `SENTRA_api` C++ REST API | **Private** | Do not expose publicly; accessed through the Vite `/api` proxy |
+| `7681` | `ALF_EWG` Terminal Control Room | **Private** | Original terminal dashboard port preserved |
+
+**Important availability note:** The URL is a GitHub Codespaces forwarded address, not permanent production hosting. The demo is reachable only while the Codespace is running and both the backend and frontend processes are active. If the Codespace is stopped or suspended, the site may show an unavailable or `502` page. Restart both services to bring it back online.
 
 Inside a Codespace terminal:
 
@@ -304,11 +326,16 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 
 # 2. Start the private C++ REST API (Terminal 1)
+export SENTRA_DEMO_PASSWORD='use-the-public-demo-password-configured-for-this-demo'
 ./build/SENTRA_api --host 127.0.0.1 --port 8080
 
-# 3. Install & start the public Vite frontend (Terminal 2)
-cd frontend && npm ci && npm run dev
+# 3. Start the public Vite frontend (Terminal 2)
+cd frontend
+npm ci
+npm run dev -- --host 0.0.0.0
 ```
+
+Keep the backend and frontend terminals running while the demo is in use. Configure Codespaces port visibility as `5173: Public`, `8080: Private`, and `7681: Private`.
 
 ### Independent Cloud Hosting
 
