@@ -36,7 +36,6 @@ using namespace DisasterCore::Alerts;
 
 struct ServerConfig {
     std::string host = "127.0.0.1";
-    std::string demoPassword;
     int port = 8080;
     std::uint32_t seed = 211;
     std::string logFilePath = "alf_ewg_incidents.bin";
@@ -172,7 +171,7 @@ bool parseScenario(const json& val, SimulationScenario& outScenario) {
 void applyCorsHeaders(httplib::Response& res, const std::string& corsOrigin) {
     res.set_header("Access-Control-Allow-Origin", corsOrigin);
     res.set_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
-    res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.set_header("Access-Control-Allow-Headers", "Content-Type");
 }
 
 void printUsage(const char* programName) {
@@ -200,10 +199,6 @@ bool parseArgs(int argc, char* argv[], ServerConfig& cfg, int& exitCode) {
     }
     if (const char* envCors = std::getenv("SENTRA_CORS_ORIGIN")) {
         if (envCors[0] != '\0') cfg.corsOrigin = envCors;
-    }
-
-    if (const char* envPassword = std::getenv("SENTRA_DEMO_PASSWORD")) {
-        if (envPassword[0] != '\0') cfg.demoPassword = envPassword;
     }
 
     for (int i = 1; i < argc; ++i) {
@@ -281,21 +276,6 @@ int main(int argc, char* argv[]) {
             if (req.method == "OPTIONS") {
                 res.status = 204;
                 return httplib::Server::HandlerResponse::Handled;
-            }
-
-            // When a demo password is configured, require it for every API route.
-            // Keep local development unchanged when SENTRA_DEMO_PASSWORD is unset.
-            if (!serverCfg.demoPassword.empty() && req.path.rfind("/api/", 0) == 0) {
-                const std::string expectedAuthorization = "Bearer " + serverCfg.demoPassword;
-                const bool authorized =
-                    req.has_header("Authorization") &&
-                    req.get_header_value("Authorization") == expectedAuthorization;
-
-                if (!authorized) {
-                    sendError(res, 401, "UNAUTHORIZED",
-                              "A valid SENTRA demo password is required.");
-                    return httplib::Server::HandlerResponse::Handled;
-                }
             }
 
             return httplib::Server::HandlerResponse::Unhandled;

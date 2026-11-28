@@ -1,9 +1,5 @@
-import { useEffect, useState } from 'react'
+
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import {
-  clearDemoPassword,
-  sentraApi,
-} from '@/api/client'
 import { DemoAccess } from '@/components/DemoAccess'
 import { AppShell } from '@/components/layout/AppShell'
 import { NAV_ITEMS } from '@/config/navigation'
@@ -19,6 +15,7 @@ import { SirenControlPage } from '@/pages/SirenControlPage'
 import { SystemDiagnosticsPage } from '@/pages/SystemDiagnosticsPage'
 import { SystemStatisticsPage } from '@/pages/SystemStatisticsPage'
 import { TelemetryAuditPage } from '@/pages/TelemetryAuditPage'
+import { useState } from 'react'
 
 function AuthenticatedApp() {
   const healthResult = useBackendHealth(10000)
@@ -72,50 +69,7 @@ function AuthenticatedApp() {
 }
 
 export function App() {
-  const [authenticated, setAuthenticated] = useState<boolean | null>(() => {
-    try {
-      return window.sessionStorage.getItem('sentra_demo_password')
-        ? null
-        : false
-    } catch {
-      return false
-    }
-  })
-
-  useEffect(() => {
-    if (authenticated !== null) return
-
-    let cancelled = false
-
-    sentraApi.getHealth()
-      .then(() => {
-        if (!cancelled) {
-          setAuthenticated(true)
-        }
-      })
-      .catch(() => {
-        clearDemoPassword()
-
-        if (!cancelled) {
-          setAuthenticated(false)
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [authenticated])
-
-  if (authenticated === null) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#0B1220] text-slate-400">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-sky-400/20 border-t-sky-400" />
-          <p className="text-sm">Verifying SENTRA access...</p>
-        </div>
-      </main>
-    )
-  }
+  const [authenticated, setAuthenticated] = useState(false)
 
   if (!authenticated) {
     return (

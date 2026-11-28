@@ -10,7 +10,6 @@ import {
   LockKeyhole,
   ShieldCheck,
 } from 'lucide-react'
-import { ApiError, sentraApi, storeDemoPassword } from '@/api/client'
 
 const PUBLIC_DEMO_PASSWORD = 'HeyPQSY@6734#tq'
 
@@ -21,7 +20,6 @@ interface DemoAccessProps {
 export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -35,7 +33,7 @@ export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
     }
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!password.trim()) {
@@ -43,24 +41,13 @@ export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
       return
     }
 
-    setLoading(true)
-    setError('')
-
-    try {
-      await sentraApi.verifyDemoPassword(password)
-      storeDemoPassword(password)
-      onAuthenticated()
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
-        setError('Incorrect password. Please try again.')
-      } else if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError('Unable to connect to SENTRA. Please try again.')
-      }
-    } finally {
-      setLoading(false)
+    if (password !== PUBLIC_DEMO_PASSWORD) {
+      setError('Incorrect password. Please try again.')
+      return
     }
+
+    setError('')
+    onAuthenticated()
   }
 
   return (
@@ -99,7 +86,6 @@ export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
             </p>
           </div>
 
-          {/* Public demo password */}
           <div className="mb-6 rounded-lg border border-sky-400/20 bg-sky-400/5 p-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-sky-400">
               Public Demo Password
@@ -148,9 +134,8 @@ export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Enter access password"
-                  autoComplete="current-password"
-                  disabled={loading}
-                  className="h-12 w-full rounded-lg border border-[#26364A] bg-[#0B1220] pl-10 pr-12 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/10 disabled:opacity-60"
+                  autoComplete="off"
+                  className="h-12 w-full rounded-lg border border-[#26364A] bg-[#0B1220] pl-10 pr-12 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/10"
                 />
 
                 <button
@@ -179,11 +164,11 @@ export function DemoAccess({ onAuthenticated }: DemoAccessProps) {
 
             <button
               type="submit"
-              disabled={loading || !password.trim()}
+              disabled={!password.trim()}
               className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 text-sm font-semibold text-[#07111F] transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? 'Verifying access...' : 'Access SENTRA'}
-              {!loading && <ArrowRight className="h-4 w-4" />}
+              Access SENTRA
+              <ArrowRight className="h-4 w-4" />
             </button>
           </form>
 
