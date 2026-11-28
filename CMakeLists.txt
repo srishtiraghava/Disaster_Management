@@ -34,6 +34,18 @@ add_executable(${PROJECT_NAME}_tests
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ALF_EWG_core)
 set_target_properties(${PROJECT_NAME}_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build")
 
+add_executable(SENTRA_api
+    "${PROJECT_SOURCE_DIR}/src/api/ServerMain.cpp"
+)
+target_link_libraries(SENTRA_api PRIVATE ALF_EWG_core)
+if(WIN32)
+    target_link_libraries(SENTRA_api PRIVATE ws2_32 wsock32)
+else()
+    find_package(Threads REQUIRED)
+    target_link_libraries(SENTRA_api PRIVATE Threads::Threads)
+endif()
+set_target_properties(SENTRA_api PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build")
+
 enable_testing()
 
 set(ALF_EWG_TEST_SUITES

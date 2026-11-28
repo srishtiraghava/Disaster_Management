@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sentra-bg: #0B1220;
+    --sentra-bg-secondary: #101B2B;
+    --sentra-card: #141F30;
+    --sentra-elevated: #19283B;
+    --sentra-border: #26364A;
+    --sentra-cyan: #38BDF8;
+    --sentra-indigo: #6366F1;
+    --sentra-red: #EF4444;
+    --sentra-amber: #F59E0B;
+    --sentra-green: #22C55E;
+    --sentra-text: #F8FAFC;
+    --sentra-muted: #94A3B8;
+  }
+
+  * {
+    border-color: #26364A;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    background-color: #0B1220;
+    color: #F8FAFC;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.font-telemetry {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle tactical grid backdrop for command center */
+.sentra-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(38, 54, 74, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(38, 54, 74, 0.22) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Custom slim scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B1220;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #26364A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #38BDF8;
+}
