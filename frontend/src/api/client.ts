@@ -1,3 +1,4 @@
+
 import type {
   AlertsResponse,
   AuditResponse,
@@ -18,7 +19,6 @@ import type {
 } from '@/types/sentra'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
-const DEMO_PASSWORD_KEY = 'sentra_demo_password'
 
 export class ApiError extends Error {
   status: number
@@ -32,37 +32,12 @@ export class ApiError extends Error {
   }
 }
 
-function getStoredPassword(): string | null {
-  try {
-    return window.sessionStorage.getItem(DEMO_PASSWORD_KEY)
-  } catch {
-    return null
-  }
-}
-
-export function storeDemoPassword(password: string): void {
-  window.sessionStorage.setItem(DEMO_PASSWORD_KEY, password)
-}
-
-export function clearDemoPassword(): void {
-  try {
-    window.sessionStorage.removeItem(DEMO_PASSWORD_KEY)
-  } catch {
-    // Ignore unavailable session storage.
-  }
-}
-
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const controller = new AbortController()
   const timeoutId = window.setTimeout(() => controller.abort(), 10000)
 
   const headers = new Headers(init?.headers)
   headers.set('Content-Type', 'application/json')
-
-  const password = getStoredPassword()
-  if (password) {
-    headers.set('Authorization', `Bearer ${password}`)
-  }
 
   let response: Response
 
@@ -76,6 +51,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
     if (err instanceof DOMException && err.name === 'AbortError') {
       throw new ApiError(408, 'REQUEST_TIMEOUT', `Request to ${path} timed out`)
     }
+
     throw err
   } finally {
     window.clearTimeout(timeoutId)
@@ -116,32 +92,39 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const sentraApi = {
-  verifyDemoPassword: (password: string) =>
-    requestJson<HealthResponse>('/api/health', {
-      headers: {
-        Authorization: `Bearer ${password}`,
-      },
-    }),
-
   getHealth: () => requestJson<HealthResponse>('/api/health'),
+
   getSnapshot: () => requestJson<SnapshotResponse>('/api/snapshot'),
+
   getStations: () => requestJson<StationsResponse>('/api/stations'),
-  getHazardAnalysis: () => requestJson<HazardAnalysisResponse>('/api/hazards/analysis'),
+
+  getHazardAnalysis: () =>
+    requestJson<HazardAnalysisResponse>('/api/hazards/analysis'),
+
   getAlerts: () => requestJson<AlertsResponse>('/api/alerts'),
+
   getSirens: () => requestJson<SirensResponse>('/api/sirens'),
+
   getEvacuation: () => requestJson<EvacuationResponse>('/api/evacuation'),
+
   getIncidents: () => requestJson<IncidentsResponse>('/api/incidents'),
 
   getIncidentById: (id: string) =>
-    requestJson<IncidentRecord>(`/api/incidents/${encodeURIComponent(id)}`),
+    requestJson<IncidentRecord>(
+      `/api/incidents/${encodeURIComponent(id)}`,
+    ),
 
   updateIncidentRoute: (id: string, evacuationRoute: string) =>
-    requestJson<IncidentRecord>(`/api/incidents/${encodeURIComponent(id)}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ evacuationRoute }),
-    }),
+    requestJson<IncidentRecord>(
+      `/api/incidents/${encodeURIComponent(id)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ evacuationRoute }),
+      },
+    ),
 
   getAudit: () => requestJson<AuditResponse>('/api/audit'),
+
   getStatistics: () => requestJson<StatisticsResponse>('/api/statistics'),
 
   runScenario: (scenario: SimulationScenarioKey, cycles: number) =>
